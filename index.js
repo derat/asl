@@ -68,7 +68,7 @@ new Vue({
   },
   computed: {
     cleanedInputWord: function() {
-      return this.inputWord.trim().toLowerCase();
+      return this.inputWord ? this.inputWord.trim().toLowerCase() : '';
     },
   },
   mounted: function() {
@@ -86,7 +86,12 @@ new Vue({
         site.getUrl(word).then(url => this.urls.splice(i, 1, url));
       });
     },
-    onSearchClick: function() {
+    onSearchInputKeydown: function(e) {
+      if (e.keyCode == 13 && this.cleanedInputWord.length) {
+        this.defineWord(this.cleanedInputWord);
+      }
+    },
+    onSearchButtonClick: function() {
       // Force an update in case some tabs failed.
       this.defineWord(this.cleanedInputWord);
     },
@@ -127,21 +132,3 @@ new Vue({
     },
   }),
 });
-
-/*
-document.addEventListener('DOMContentLoaded', () => {
-  $('search-input').addEventListener('keydown', e => {
-    if (e.keyCode == 13) $('search-button').click();
-  });
-  $('search-button').addEventListener('click', () => updateFrameContent());
-
-  $('handspeak-tab').addEventListener('click', () => updateSite('handspeak'));
-  $('lifeprint-tab').addEventListener('click', () => updateSite('lifeprint'));
-  $('signasl-tab').addEventListener('click', () => updateSite('signasl'));
-
-  window.addEventListener('resize', () => updateFrameSize());
-  window.setTimeout(() => updateFrameSize(), 100);
-
-  updateSite('lifeprint');
-});
-*/

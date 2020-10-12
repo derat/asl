@@ -20,11 +20,12 @@
               <v-text-field
                 id="search-input"
                 v-model="inputWord"
+                @keydown="onSearchInputKeydown"
                 clearable
                 placeholder="Enter word"
                 class="pb-0 mt-2"
               ></v-text-field>
-              <v-btn :disabled="!inputWord || !inputWord.trim()" @click="onSearchClick" icon
+              <v-btn :disabled="!cleanedInputWord.length" @click="onSearchButtonClick" icon
                 ><v-icon>mdi-file-find</v-icon></v-btn
               >
               <v-tabs v-model="tab" background-color="primary" slider-color="accent" class="tabs ml-2">
