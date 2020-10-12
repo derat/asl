@@ -9,7 +9,9 @@ const sites = [
     abbrev: 'LP',
     getUrl: word =>
       Promise.resolve(
-        `https://www.lifeprint.com/asl101/pages-signs/${word[0]}/${word}.htm`
+        `https://www.lifeprint.com/asl101/pages-signs/${
+          word[0]
+        }/${word.replaceAll(' ', '-')}.htm`
       ),
     minWidth: 746,
   },
@@ -22,7 +24,10 @@ const sites = [
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: `page=1&query=${escape(word)}`,
+          // It doesn't look like multi-word searches are supported, so just
+          // search for the first word and hope the full thing appears in the
+          // results.
+          body: `page=1&query=${escape(word.split()[0])}`,
         }
       )
         .then(resp => {
@@ -34,7 +39,7 @@ const sites = [
             `<a href="(/word/search/index\\.php\\?id=\\d+)">${word}</a>`
           );
           const matches = text.match(re);
-          if (matches.length == 0) throw new Error('No matches found');
+          if (!matches) throw new Error('No matches found');
           return `https://www.handspeak.com${matches[1]}`;
         }),
     minWidth: 500,
@@ -42,36 +47,54 @@ const sites = [
   {
     id: 'signasl',
     abbrev: 'SA',
-    getUrl: word => Promise.resolve(`https://www.signasl.org/sign/${word}`),
+    getUrl: word =>
+      Promise.resolve(
+        `https://www.signasl.org/sign/${word.replaceAll(' ', '-')}`
+      ),
     minWidth: 400,
   },
 ];
 
 new Vue({
   data: {
-    word: '',
-    tab: 0,
+    inputWord: '', // model for search input
+    definedWord: '', // currently-displayed word
+    tab: 0, // model for v-tabs (index into |sites|)
     urls: new Array(sites.lengths), // 'src' attributes for each tab's iframe
     styles: new Array(sites.lengths), // inline styles for each tab's iframe
     contentWidth: 0,
     contentHeight: 0,
     sites,
   },
+  computed: {
+    cleanedInputWord: function() {
+      return this.inputWord.trim().toLowerCase();
+    },
+  },
   mounted: function() {
-    console.log('mounted');
     window.addEventListener('resize', () => this.onResize());
     this.onResize();
   },
   methods: {
-    onSearchClick: function() {
-      console.log(`onSearchClick: ${this.word}`);
-      const word = this.word.trim().toLowerCase();
+    // Updates iframes in tabs to define |word|.
+    defineWord: function(word) {
+      this.definedWord = word;
       this.sites.forEach((site, i) => {
         this.urls[i] = 'about:blank';
         if (word === '') return;
         // https://vuejs.org/2016/02/06/common-gotchas/#Why-isn%E2%80%99t-the-DOM-updating
         site.getUrl(word).then(url => this.urls.splice(i, 1, url));
       });
+    },
+    onSearchClick: function() {
+      // Force an update in case some tabs failed.
+      this.defineWord(this.cleanedInputWord);
+    },
+    onTabChange() {
+      // Only update if a new word was typed but not submitted.
+      if (this.cleanedInputWord != this.definedWord) {
+        this.defineWord(this.cleanedInputWord);
+      }
     },
     onResize: function() {
       this.contentHeight = window.innerHeight - this.$vuetify.application.top;

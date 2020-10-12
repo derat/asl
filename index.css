@@ -9,9 +9,13 @@ body {
   /* Seems to use primary color otherwise, making it invisible:
    * https://github.com/vuetifyjs/vuetify/issues/9534 */
   caret-color: black;
-  min-width: 120px;
+  flex-grow: 1;
+  max-width: 200;
 }
 
+.tabs {
+  width: fit-content;
+}
 .tab {
   min-width: 60px;
 }

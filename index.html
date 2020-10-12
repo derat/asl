@@ -19,14 +19,16 @@
             <v-toolbar-items>
               <v-text-field
                 id="search-input"
-                v-model="word"
+                v-model="inputWord"
                 clearable
                 placeholder="Enter word"
                 class="pb-0 mt-2"
               ></v-text-field>
-              <v-btn @click="onSearchClick" icon><v-icon>mdi-file-find</v-icon></v-btn>
-              <v-tabs v-model="tab" background-color="primary" slider-color="accent">
-                <v-tab v-for="site in sites" :key="site.id" class="tab">{{ site.abbrev }}</v-tab>
+              <v-btn :disabled="!inputWord || !inputWord.trim()" @click="onSearchClick" icon
+                ><v-icon>mdi-file-find</v-icon></v-btn
+              >
+              <v-tabs v-model="tab" background-color="primary" slider-color="accent" class="tabs ml-2">
+                <v-tab v-for="site in sites" :key="site.id" @change="onTabChange" class="tab">{{ site.abbrev }}</v-tab>
               </v-tabs>
             </v-toolbar-items>
           </v-app-bar>
