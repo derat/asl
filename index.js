@@ -79,10 +79,9 @@ new Vue({
   methods: {
     // Updates iframes in tabs to define |word|.
     defineWord: function(word) {
+      if (word === '') return;
       this.definedWord = word;
       this.sites.forEach(site => {
-        this.urls[site.id] = 'about:blank';
-        if (word === '') return;
         // https://vuejs.org/2016/02/06/common-gotchas/#Why-isn%E2%80%99t-the-DOM-updating
         site
           .getUrl(word)
