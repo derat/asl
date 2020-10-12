@@ -1,80 +1,30 @@
-:root {
-  --font-family: Roboto, Arial, sans-serif;
-}
-
 html {
   height: 100%;
 }
 body {
-  font-family: var(--font-family);
-  font-size: 20px;
-  height: 100%;
-  margin: 0;
-}
-#main-container {
-  display: flex;
-  flex-direction: column;
   height: 100%;
 }
-#top-container {
-  align-items: flex-end;
-  border-bottom: solid 1px #ddd;
-  display: flex;
-}
+
 #search-input {
-  font-size: 18px;
-  margin: 4px;
-  width: 120px;
-}
-#search-button {
-  font-size: 18px;
-  margin: 4px;
-  margin-left: 0;
+  /* Seems to use primary color otherwise, making it invisible:
+   * https://github.com/vuetifyjs/vuetify/issues/9534 */
+  caret-color: black;
+  min-width: 120px;
 }
 
-/* https://css-tricks.com/better-tabs-with-round-out-borders/ */
-#tabs {
-  list-style: none;
-  margin: 0;
-  margin-left: 4px;
-  padding: 0;
-  position: relative;
-  text-align: center;
-}
-#tabs li {
-  background-color: #eee;
-  border: 1px solid #ddd;
-  border-bottom: none;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-  color: #555;
-  cursor: pointer;
-  display: inline-block;
-  margin: 0;
-  padding: 4px 12px;
-}
-#tabs li.selected {
-  background: #fff;
-  color: #000;
-  cursor: default;
-  position: relative;
-}
-#tabs li.selected:after {
-  border-bottom: 1px solid white;
-  bottom: -1px;
-  content: '';
-  left: 0;
-  position: absolute;
-  width: 100%;
-  z-index: 1;
+.tab {
+  min-width: 60px;
 }
 
-#content-wrapper {
-  height: 100%;
+.content-wrapper {
   overflow: hidden;
-  position: relative;
   width: 100%;
 }
+.content-iframe {
+  border: none;
+  transform-origin: 0 0;
+}
+/*
 #content-message {
   background-color: #c44;
   border-radius: 6px;
@@ -86,7 +36,4 @@ body {
   top: 4px;
   z-index: 1;
 }
-#content-iframe {
-  border: none;
-  transform-origin: 0 0;
-}
+*/

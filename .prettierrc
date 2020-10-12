@@ -1,0 +1,14 @@
+{
+  "endOfLine": "lf",
+  "singleQuote": true,
+  "tabWidth": 2,
+  "trailingComma": "es5",
+  "overrides": [
+    {
+      "files": "index.html",
+      "options": {
+        "printWidth": 120
+      }
+    }
+  ]
+}

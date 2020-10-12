@@ -1,25 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <script src="index.js"></script>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui"
+    />
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
     <link href="index.css" rel="stylesheet" />
   </head>
   <body>
-    <div id="main-container">
-      <div id="top-container">
-        <input id="search-input" type="text" placeholder="Word" />
-        <button id="search-button">Go</button>
-        <ul id="tabs">
-          <li id="lifeprint-tab">LP</li>
-          <li id="handspeak-tab">HS</li>
-          <li id="signasl-tab">SA</li>
-        </ul>
-      </div>
-      <div id="content-wrapper">
-        <div id="content-message"></div>
-        <iframe id="content-iframe" />
-      </div>
+    <div id="app">
+      <v-app>
+        <v-main>
+          <v-app-bar app color="primary" dense class="white--text">
+            <v-toolbar-items>
+              <v-text-field
+                id="search-input"
+                v-model="word"
+                clearable
+                placeholder="Enter word"
+                class="pb-0 mt-2"
+              ></v-text-field>
+              <v-btn @click="onSearchClick" icon><v-icon>mdi-file-find</v-icon></v-btn>
+              <v-tabs v-model="tab" background-color="primary" slider-color="accent">
+                <v-tab v-for="site in sites" :key="site.id" class="tab">{{ site.abbrev }}</v-tab>
+              </v-tabs>
+            </v-toolbar-items>
+          </v-app-bar>
+          <v-tabs-items v-model="tab" :style="{ height: `${contentHeight}px`}">
+            <v-tab-item v-for="(site, i) in sites" :key="site.id">
+              <div class="content-wrapper" :style="{ height: `${contentHeight}px`}">
+                <iframe :src="urls[i]" :style="getFrameStyle(i)" class="content-iframe"></iframe>
+              </div>
+            </v-tab-item>
+          </v-tabs-items>
+        </v-main>
+      </v-app>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="index.js"></script>
   </body>
 </html>
