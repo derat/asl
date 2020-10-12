@@ -86,6 +86,7 @@ new Vue({
       if (word === '') return;
       this.definedWord = word;
       this.sites.forEach(site => {
+        this.hideAlert(site.id);
         // https://vuejs.org/2016/02/06/common-gotchas/#Why-isn%E2%80%99t-the-DOM-updating
         site
           .getUrl(word)
@@ -129,6 +130,9 @@ new Vue({
     showAlert: function(id, msg) {
       this.alertText[id] = msg;
       this.alertShown[id] = true;
+    },
+    hideAlert: function(id) {
+      this.alertShown[id] = false;
     },
   },
   el: '#app',
