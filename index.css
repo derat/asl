@@ -28,16 +28,3 @@ body {
   border: none;
   transform-origin: 0 0;
 }
-/*
-#content-message {
-  background-color: #c44;
-  border-radius: 6px;
-  color: white;
-  display: none;
-  left: 4px;
-  padding: 4px 8px;
-  position: absolute;
-  top: 4px;
-  z-index: 1;
-}
-*/

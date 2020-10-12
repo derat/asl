@@ -60,8 +60,9 @@ new Vue({
     inputWord: '', // model for search input
     definedWord: '', // currently-displayed word
     tab: 0, // model for v-tabs (index into |sites|)
-    urls: new Array(sites.lengths), // 'src' attributes for each tab's iframe
-    styles: new Array(sites.lengths), // inline styles for each tab's iframe
+    urls: Object.fromEntries(sites.map(s => [s.id, ''])),
+    alertShown: Object.fromEntries(sites.map(s => [s.id, false])),
+    alertText: Object.fromEntries(sites.map(s => [s.id, ''])),
     contentWidth: 0,
     contentHeight: 0,
     sites,
@@ -79,11 +80,14 @@ new Vue({
     // Updates iframes in tabs to define |word|.
     defineWord: function(word) {
       this.definedWord = word;
-      this.sites.forEach((site, i) => {
-        this.urls[i] = 'about:blank';
+      this.sites.forEach(site => {
+        this.urls[site.id] = 'about:blank';
         if (word === '') return;
         // https://vuejs.org/2016/02/06/common-gotchas/#Why-isn%E2%80%99t-the-DOM-updating
-        site.getUrl(word).then(url => this.urls.splice(i, 1, url));
+        site
+          .getUrl(word)
+          .then(url => (this.urls[site.id] = url))
+          .catch(err => this.showAlert(site.id, err.toString()));
       });
     },
     onSearchInputKeydown: function(e) {
@@ -105,8 +109,8 @@ new Vue({
       this.contentHeight = window.innerHeight - this.$vuetify.application.top;
       this.contentWidth = window.innerWidth;
     },
-    getFrameStyle: function(i) {
-      const site = this.sites[i];
+    getFrameStyle: function(id) {
+      const site = this.sites.find(s => s.id == id);
       const ratio = this.contentWidth / site.minWidth;
       return ratio >= 1
         ? {
@@ -118,6 +122,10 @@ new Vue({
             width: `${site.minWidth}px`,
             height: `${this.contentHeight / ratio}px`,
           };
+    },
+    showAlert: function(id, msg) {
+      this.alertText[id] = msg;
+      this.alertShown[id] = true;
     },
   },
   el: '#app',

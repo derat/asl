@@ -34,9 +34,12 @@
             </v-toolbar-items>
           </v-app-bar>
           <v-tabs-items v-model="tab" :style="{ height: `${contentHeight}px`}">
-            <v-tab-item v-for="(site, i) in sites" :key="site.id">
+            <v-tab-item v-for="site in sites" :key="site.id">
+              <v-alert v-model="alertShown[site.id]" border="bottom" color="error" dark dense dismissible
+                >{{ alertText[site.id] }}</v-alert
+              >
               <div class="content-wrapper" :style="{ height: `${contentHeight}px`}">
-                <iframe :src="urls[i]" :style="getFrameStyle(i)" class="content-iframe"></iframe>
+                <iframe :src="urls[site.id]" :style="getFrameStyle(site.id)" class="content-iframe"></iframe>
               </div>
             </v-tab-item>
           </v-tabs-items>
