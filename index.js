@@ -2,75 +2,73 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-function $(id) {
-  return document.getElementById(id);
-}
-
-// Information about different sites.
-const sites = [
-  {
-    id: 'lifeprint',
-    abbrev: 'LP',
-    getUrl: word =>
-      Promise.resolve(
-        `https://www.lifeprint.com/asl101/pages-signs/${
-          word[0]
-        }/${word.replaceAll(' ', '-')}.htm`
-      ),
-    minWidth: 746,
-  },
-  {
-    id: 'handspeak',
-    abbrev: 'HS',
-    getUrl: word =>
-      fetch(
-        'https://cors-anywhere.herokuapp.com/https://www.handspeak.com/word/search/app/app-dictionary.php',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          // It doesn't look like multi-word searches are supported, so just
-          // search for the first word and hope the full thing appears in the
-          // results.
-          body: `page=1&query=${escape(word.split()[0])}`,
-        }
-      )
-        .then(resp => {
-          if (!resp.ok) throw new Error(resp.status);
-          return resp.text();
-        })
-        .then(text => {
-          const re = new RegExp(
-            `<a href="(/word/search/index\\.php\\?id=\\d+)">${word}</a>`
-          );
-          const matches = text.match(re);
-          if (!matches) throw new Error('No matches found');
-          return `https://www.handspeak.com${matches[1]}`;
-        }),
-    minWidth: 500,
-  },
-  {
-    id: 'signasl',
-    abbrev: 'SA',
-    getUrl: word =>
-      Promise.resolve(
-        `https://www.signasl.org/sign/${word.replaceAll(' ', '-')}`
-      ),
-    minWidth: 400,
-  },
-];
-
 new Vue({
   data: {
     inputWord: '', // model for search input
     definedWord: '', // currently-displayed word
-    tab: 0, // model for v-tabs (index into |sites|)
-    urls: Object.fromEntries(sites.map(s => [s.id, ''])),
-    loading: Object.fromEntries(sites.map(s => [s.id, false])),
-    alertShown: Object.fromEntries(sites.map(s => [s.id, false])),
-    alertText: Object.fromEntries(sites.map(s => [s.id, ''])),
+    tab: 0, // model for v-tabs (index into |tabs|)
+    tabs: [
+      {
+        abbrev: 'LP',
+        getUrl: word =>
+          Promise.resolve(
+            `https://www.lifeprint.com/asl101/pages-signs/${
+              word[0]
+            }/${word.replaceAll(' ', '-')}.htm`
+          ),
+        minWidth: 746,
+        url: '',
+        loading: false,
+        alertShown: false,
+        alertText: '',
+      },
+      {
+        abbrev: 'HS',
+        getUrl: word =>
+          fetch(
+            'https://cors-anywhere.herokuapp.com/https://www.handspeak.com/word/search/app/app-dictionary.php',
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              // It doesn't look like multi-word searches are supported, so just
+              // search for the first word and hope the full thing appears in the
+              // results.
+              body: `page=1&query=${escape(word.split()[0])}`,
+            }
+          )
+            .then(resp => {
+              if (!resp.ok) throw new Error(resp.status);
+              return resp.text();
+            })
+            .then(text => {
+              const re = new RegExp(
+                `<a href="(/word/search/index\\.php\\?id=\\d+)">${word}</a>`
+              );
+              const matches = text.match(re);
+              if (!matches) throw new Error('No matches found');
+              return `https://www.handspeak.com${matches[1]}`;
+            }),
+        minWidth: 500,
+        url: '',
+        loading: false,
+        alertShown: false,
+        alertText: '',
+      },
+      {
+        abbrev: 'SA',
+        getUrl: word =>
+          Promise.resolve(
+            `https://www.signasl.org/sign/${word.replaceAll(' ', '-')}`
+          ),
+        minWidth: 400,
+        url: '',
+        loading: false,
+        alertShown: false,
+        alertText: '',
+      },
+    ],
     contentWidth: 0,
     contentHeight: 0,
-    sites,
   },
   computed: {
     cleanedInputWord: function() {
@@ -86,14 +84,17 @@ new Vue({
     defineWord: function(word) {
       if (word === '') return;
       this.definedWord = word;
-      this.sites.forEach(site => {
-        this.hideAlert(site.id);
-        this.loading[site.id] = true;
-        site
+      this.tabs.forEach(tab => {
+        tab.alertShown = false;
+        tab.loading = true;
+        tab
           .getUrl(word)
-          .then(url => (this.urls[site.id] = url))
-          .catch(err => this.showAlert(site.id, err.toString()))
-          .finally(() => (this.loading[site.id] = false));
+          .then(url => (tab.url = url))
+          .catch(err => {
+            tab.alertText = err.toString();
+            tab.alertShown = true;
+          })
+          .finally(() => (tab.loading = false));
       });
     },
     onSearchInputKeydown: function(e) {
@@ -115,9 +116,9 @@ new Vue({
       this.contentHeight = window.innerHeight - this.$vuetify.application.top;
       this.contentWidth = window.innerWidth;
     },
-    getFrameStyle: function(id) {
-      const site = this.sites.find(s => s.id == id);
-      const ratio = this.contentWidth / site.minWidth;
+    getFrameStyle: function(i) {
+      const tab = this.tabs[i];
+      const ratio = this.contentWidth / tab.minWidth;
       return ratio >= 1
         ? {
             width: `${this.contentWidth}px`,
@@ -125,16 +126,9 @@ new Vue({
           }
         : {
             transform: `scale(${ratio})`,
-            width: `${site.minWidth}px`,
+            width: `${tab.minWidth}px`,
             height: `${this.contentHeight / ratio}px`,
           };
-    },
-    showAlert: function(id, msg) {
-      this.alertText[id] = msg;
-      this.alertShown[id] = true;
-    },
-    hideAlert: function(id) {
-      this.alertShown[id] = false;
     },
   },
   el: '#app',

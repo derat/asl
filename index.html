@@ -30,23 +30,18 @@
                 ><v-icon>mdi-file-find</v-icon></v-btn
               >
               <v-tabs v-model="tab" background-color="primary" slider-color="accent" class="tabs ml-2">
-                <v-tab v-for="site in sites" :key="site.id" @change="onTabChange" class="tab">{{ site.abbrev }}</v-tab>
+                <v-tab v-for="tab in tabs" :key="tab.abbrev" @change="onTabChange" class="tab">{{ tab.abbrev }}</v-tab>
               </v-tabs>
             </v-toolbar-items>
           </v-app-bar>
           <v-tabs-items v-model="tab" :style="{ height: `${contentHeight}px`}">
-            <v-tab-item v-for="site in sites" :key="site.id">
-              <v-alert v-model="alertShown[site.id]" border="bottom" color="error" dark dense dismissible
-                >{{ alertText[site.id] }}</v-alert
+            <v-tab-item v-for="(tab, i) in tabs" :key="tab.abbrev">
+              <v-alert v-model="tab.alertShown" border="bottom" color="error" dark dense dismissible
+                >{{ tab.alertText }}</v-alert
               >
-              <v-progress-circular
-                v-if="loading[site.id]"
-                indeterminate
-                size="48"
-                class="spinner"
-              ></v-progress-circular>
+              <v-progress-circular v-if="tab.loading" indeterminate size="48" class="spinner"></v-progress-circular>
               <div v-else class="content-wrapper" :style="{ height: `${contentHeight}px`}">
-                <iframe :src="urls[site.id]" :style="getFrameStyle(site.id)" class="content-iframe"></iframe>
+                <iframe :src="tab.url" :style="getFrameStyle(i)" class="content-iframe"></iframe>
               </div>
             </v-tab-item>
           </v-tabs-items>
