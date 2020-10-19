@@ -39,7 +39,13 @@
               <v-alert v-model="alertShown[site.id]" border="bottom" color="error" dark dense dismissible
                 >{{ alertText[site.id] }}</v-alert
               >
-              <div class="content-wrapper" :style="{ height: `${contentHeight}px`}">
+              <v-progress-circular
+                v-if="loading[site.id]"
+                indeterminate
+                size="48"
+                class="spinner"
+              ></v-progress-circular>
+              <div v-else class="content-wrapper" :style="{ height: `${contentHeight}px`}">
                 <iframe :src="urls[site.id]" :style="getFrameStyle(site.id)" class="content-iframe"></iframe>
               </div>
             </v-tab-item>

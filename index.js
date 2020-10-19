@@ -65,6 +65,7 @@ new Vue({
     definedWord: '', // currently-displayed word
     tab: 0, // model for v-tabs (index into |sites|)
     urls: Object.fromEntries(sites.map(s => [s.id, ''])),
+    loading: Object.fromEntries(sites.map(s => [s.id, false])),
     alertShown: Object.fromEntries(sites.map(s => [s.id, false])),
     alertText: Object.fromEntries(sites.map(s => [s.id, ''])),
     contentWidth: 0,
@@ -87,11 +88,12 @@ new Vue({
       this.definedWord = word;
       this.sites.forEach(site => {
         this.hideAlert(site.id);
-        // https://vuejs.org/2016/02/06/common-gotchas/#Why-isn%E2%80%99t-the-DOM-updating
+        this.loading[site.id] = true;
         site
           .getUrl(word)
           .then(url => (this.urls[site.id] = url))
-          .catch(err => this.showAlert(site.id, err.toString()));
+          .catch(err => this.showAlert(site.id, err.toString()))
+          .finally(() => (this.loading[site.id] = false));
       });
     },
     onSearchInputKeydown: function(e) {

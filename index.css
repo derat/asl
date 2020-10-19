@@ -20,6 +20,14 @@ body {
   min-width: 60px;
 }
 
+.spinner {
+  left: 50%;
+  margin-left: -24px;
+  margin-top: -24px;
+  position: fixed;
+  top: 50%;
+}
+
 .content-wrapper {
   overflow: hidden;
   width: 100%;
