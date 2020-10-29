@@ -1,0 +1,14 @@
+{
+  "name": "ASL Lookup",
+  "short_name": "ASL",
+  "display": "standalone",
+  "theme_color": "#b0bec5",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
