@@ -9,7 +9,9 @@ new Vue({
     tab: 0, // model for v-tabs (index into |tabs|)
     tabs: [
       {
+        name: 'Lifeprint',
         abbrev: 'LP',
+        tooltip: 'Bill Vicars',
         getUrl: word =>
           Promise.resolve(
             `https://www.lifeprint.com/asl101/pages-signs/${
@@ -23,7 +25,9 @@ new Vue({
         alertText: '',
       },
       {
+        name: 'Handspeak',
         abbrev: 'HS',
+        tooltip: 'Jolanta Lapiak',
         getUrl: word =>
           fetch(
             'https://cors-anywhere.herokuapp.com/https://www.handspeak.com/word/search/app/app-dictionary.php',
@@ -55,6 +59,7 @@ new Vue({
         alertText: '',
       },
       {
+        name: 'SignASL',
         abbrev: 'SA',
         getUrl: word =>
           Promise.resolve(
