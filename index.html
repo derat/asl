@@ -20,33 +20,33 @@
   <body>
     <div id="app">
       <v-app>
+        <v-app-bar app color="primary" dense class="white--text">
+          <v-toolbar-items>
+            <v-text-field
+              id="search-input"
+              v-model="inputWord"
+              @keydown="onSearchInputKeydown"
+              autofocus
+              clearable
+              placeholder="Enter word"
+              class="pb-0 mt-2"
+            ></v-text-field>
+            <v-btn :disabled="!cleanedInputWord.length" @click="onSearchButtonClick" icon
+              ><v-icon>mdi-file-find</v-icon></v-btn
+            >
+            <v-tabs v-model="tab" background-color="primary" slider-color="accent" class="tabs ml-2">
+              <v-tooltip v-for="tab in tabs" :key="tab.abbrev" bottom :disabled="!tab.tooltip">
+                <template #activator="{ on, attrs }">
+                  <v-tab v-bind="attrs" v-on="on" @change="onTabChange" class="tab">
+                    {{ $vuetify.breakpoint.xs ? tab.abbrev : tab.name }}
+                  </v-tab>
+                </template>
+                <span>{{ tab.tooltip }}</span>
+              </v-tooltip>
+            </v-tabs>
+          </v-toolbar-items>
+        </v-app-bar>
         <v-main>
-          <v-app-bar app color="primary" dense class="white--text">
-            <v-toolbar-items>
-              <v-text-field
-                id="search-input"
-                v-model="inputWord"
-                @keydown="onSearchInputKeydown"
-                autofocus
-                clearable
-                placeholder="Enter word"
-                class="pb-0 mt-2"
-              ></v-text-field>
-              <v-btn :disabled="!cleanedInputWord.length" @click="onSearchButtonClick" icon
-                ><v-icon>mdi-file-find</v-icon></v-btn
-              >
-              <v-tabs v-model="tab" background-color="primary" slider-color="accent" class="tabs ml-2">
-                <v-tooltip v-for="tab in tabs" :key="tab.abbrev" bottom :disabled="!tab.tooltip">
-                  <template #activator="{ on, attrs }">
-                    <v-tab v-bind="attrs" v-on="on" @change="onTabChange" class="tab">
-                      {{ $vuetify.breakpoint.xs ? tab.abbrev : tab.name }}
-                    </v-tab>
-                  </template>
-                  <span>{{ tab.tooltip }}</span>
-                </v-tooltip>
-              </v-tabs>
-            </v-toolbar-items>
-          </v-app-bar>
           <v-tabs-items v-model="tab" :style="{ height: `${contentHeight}px`}">
             <v-tab-item v-for="(tab, i) in tabs" :key="tab.abbrev">
               <v-alert v-model="tab.alertShown" border="bottom" color="error" dark dense dismissible
