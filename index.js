@@ -81,13 +81,22 @@ new Vue({
     },
   },
   mounted: function() {
+    window.addEventListener('popstate', e => this.onPopState(e));
     window.addEventListener('resize', () => this.onResize());
     this.onResize();
+
+    if (window.location.hash.length > 1) {
+      const word = window.location.hash.slice(1);
+      this.defineWord(word);
+      this.inputWord = word;
+    }
   },
   methods: {
     // Updates iframes in tabs to define |word|.
-    defineWord: function(word) {
+    defineWord: function(word, push) {
       if (word === '') return;
+
+      const changed = word !== this.definedWord;
       this.definedWord = word;
       this.tabs.forEach(tab => {
         tab.alertShown = false;
@@ -101,22 +110,28 @@ new Vue({
           })
           .finally(() => (tab.loading = false));
       });
+      if (changed && push) window.history.pushState({ word }, '', `#${word}`);
     },
     onSearchInputKeydown: function(e) {
-      if (e.keyCode == 13 && this.cleanedInputWord.length) {
-        this.defineWord(this.cleanedInputWord);
+      if (e.keyCode === 13 && this.cleanedInputWord.length) {
+        this.defineWord(this.cleanedInputWord, true /* push */);
         this.$refs.searchInput.blur();
       }
     },
     onSearchButtonClick: function() {
-      this.defineWord(this.cleanedInputWord);
+      this.defineWord(this.cleanedInputWord, true /* push */);
       this.$refs.searchInput.blur();
     },
     onTabChange() {
       // Only update if a new word was typed but not submitted.
-      if (this.cleanedInputWord != this.definedWord) {
-        this.defineWord(this.cleanedInputWord);
+      if (this.cleanedInputWord !== this.definedWord) {
+        this.defineWord(this.cleanedInputWord, true /* push */);
       }
+    },
+    onPopState: function(ev) {
+      const word = ev.state.word || '';
+      this.inputWord = word;
+      this.defineWord(word, false /* push */);
     },
     onResize: function() {
       this.contentHeight = window.innerHeight - this.$vuetify.application.top;
