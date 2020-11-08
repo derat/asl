@@ -87,7 +87,7 @@ new Vue({
 
     if (window.location.hash.length > 1) {
       const word = window.location.hash.slice(1);
-      this.defineWord(word);
+      this.defineWord(word, false /* push */);
       this.inputWord = word;
     }
   },
@@ -116,6 +116,7 @@ new Vue({
       if (e.keyCode === 13 && this.cleanedInputWord.length) {
         this.defineWord(this.cleanedInputWord, true /* push */);
         this.$refs.searchInput.blur();
+        e.preventDefault();
       }
     },
     onSearchButtonClick: function() {
