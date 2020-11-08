@@ -24,6 +24,7 @@
           <v-toolbar-items>
             <v-text-field
               id="search-input"
+              ref="searchInput"
               v-model="inputWord"
               @keydown="onSearchInputKeydown"
               autofocus

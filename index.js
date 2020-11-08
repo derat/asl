@@ -105,11 +105,12 @@ new Vue({
     onSearchInputKeydown: function(e) {
       if (e.keyCode == 13 && this.cleanedInputWord.length) {
         this.defineWord(this.cleanedInputWord);
+        this.$refs.searchInput.blur();
       }
     },
     onSearchButtonClick: function() {
-      // Force an update in case some tabs failed.
       this.defineWord(this.cleanedInputWord);
+      this.$refs.searchInput.blur();
     },
     onTabChange() {
       // Only update if a new word was typed but not submitted.
