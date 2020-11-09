@@ -49,7 +49,7 @@ new Vue({
                 `<a href="(/word/search/index\\.php\\?id=\\d+)">${word}</a>`
               );
               const matches = text.match(re);
-              if (!matches) throw new Error('No matches found');
+              if (!matches) throw new Error(`“${word}” not found`);
               return `https://www.handspeak.com${matches[1]}`;
             }),
         minWidth: 500,
@@ -111,6 +111,7 @@ new Vue({
           .catch(err => {
             tab.alertText = err.toString();
             tab.alertShown = true;
+            tab.url = 'about:blank';
           })
           .finally(() => (tab.loading = false));
       });
