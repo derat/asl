@@ -2,34 +2,70 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Tab is the model for a site displaying the signe for a word.
+class Tab {
+  constructor(name, abbrev, tooltip, getUrl, minWidth) {
+    this.name = name;
+    this.abbrev = abbrev;
+    this.tooltip = tooltip;
+    this.getUrl = getUrl;
+    this.minWidth = minWidth;
+
+    this.word = '';
+    this.url = '';
+    this.urlCache = {};
+    this.loading = false;
+    this.alertShown = false;
+    this.alertText = '';
+  }
+
+  // Asynchronously loads the sign for the supplied word.
+  loadWord(word) {
+    this.word = word;
+    this.alertShown = false;
+    this.loading = true;
+
+    (this.urlCache[word] !== undefined
+      ? Promise.resolve(this.urlCache[word])
+      : this.getUrl(word)
+    )
+      .then(url => {
+        this.urlCache[word] = url;
+        if (word === this.word) this.url = url;
+      })
+      .catch(err => {
+        this.word = '';
+        this.url = 'about:blank';
+        this.alertText = err.toString();
+        this.alertShown = true;
+      })
+      .finally(() => (this.loading = false));
+  }
+}
+
 new Vue({
   data: {
     inputWord: '', // model for search input
     definedWord: '', // currently-displayed word
     tab: 0, // model for v-tabs (index into |tabs|)
     tabs: [
-      {
-        name: 'Lifeprint',
-        abbrev: 'LP',
-        tooltip: 'Bill Vicars',
-        getUrl: word =>
+      new Tab(
+        'Lifeprint',
+        'LP',
+        'Bill Vicars',
+        word =>
           Promise.resolve(
             `https://www.lifeprint.com/asl101/pages-signs/${
               word[0]
             }/${word.replaceAll(' ', '-')}.htm`
           ),
-        minWidth: 746,
-        url: '',
-        urlCache: {},
-        loading: false,
-        alertShown: false,
-        alertText: '',
-      },
-      {
-        name: 'Handspeak',
-        abbrev: 'HS',
-        tooltip: 'Jolanta Lapiak',
-        getUrl: word =>
+        746
+      ),
+      new Tab(
+        'Handspeak',
+        'HS',
+        'Jolanta Lapiak',
+        word =>
           fetch(
             'https://cors-anywhere.herokuapp.com/https://www.handspeak.com/word/search/app/app-dictionary.php',
             {
@@ -53,27 +89,18 @@ new Vue({
               if (!matches) throw new Error(`“${word}” not found`);
               return `https://www.handspeak.com${matches[1]}`;
             }),
-        minWidth: 500,
-        url: '',
-        urlCache: {},
-        loading: false,
-        alertShown: false,
-        alertText: '',
-      },
-      {
-        name: 'SignASL',
-        abbrev: 'SA',
-        getUrl: word =>
+        500
+      ),
+      new Tab(
+        'SignASL',
+        'SA',
+        '',
+        word =>
           Promise.resolve(
             `https://www.signasl.org/sign/${word.replaceAll(' ', '-')}`
           ),
-        minWidth: 400,
-        url: '',
-        urlCache: {},
-        loading: false,
-        alertShown: false,
-        alertText: '',
-      },
+        400
+      ),
     ],
     contentWidth: 0,
     contentHeight: 0,
@@ -102,28 +129,9 @@ new Vue({
     // Updates iframes in tabs to define |word|.
     defineWord: function(word, push) {
       if (word === '') return;
-
       const changed = word !== this.definedWord;
       this.definedWord = word;
-      this.tabs.forEach(tab => {
-        tab.alertShown = false;
-        tab.loading = true;
-
-        (tab.urlCache[word] !== undefined
-          ? Promise.resolve(tab.urlCache[word])
-          : tab.getUrl(word)
-        )
-          .then(url => {
-            tab.urlCache[word] = url;
-            if (word === this.definedWord) tab.url = url;
-          })
-          .catch(err => {
-            tab.alertText = err.toString();
-            tab.alertShown = true;
-            tab.url = 'about:blank';
-          })
-          .finally(() => (tab.loading = false));
-      });
+      this.tabs.forEach(tab => tab.loadWord(word));
       if (changed && push) window.history.pushState({ word }, '', `#${word}`);
     },
     onSearchInputKeydown: function(e) {
