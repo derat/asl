@@ -20,6 +20,7 @@ new Vue({
           ),
         minWidth: 746,
         url: '',
+        urlCache: {},
         loading: false,
         alertShown: false,
         alertText: '',
@@ -54,6 +55,7 @@ new Vue({
             }),
         minWidth: 500,
         url: '',
+        urlCache: {},
         loading: false,
         alertShown: false,
         alertText: '',
@@ -67,6 +69,7 @@ new Vue({
           ),
         minWidth: 400,
         url: '',
+        urlCache: {},
         loading: false,
         alertShown: false,
         alertText: '',
@@ -105,9 +108,15 @@ new Vue({
       this.tabs.forEach(tab => {
         tab.alertShown = false;
         tab.loading = true;
-        tab
-          .getUrl(word)
-          .then(url => (tab.url = url))
+
+        (tab.urlCache[word] !== undefined
+          ? Promise.resolve(tab.urlCache[word])
+          : tab.getUrl(word)
+        )
+          .then(url => {
+            tab.urlCache[word] = url;
+            if (word === this.definedWord) tab.url = url;
+          })
           .catch(err => {
             tab.alertText = err.toString();
             tab.alertShown = true;
