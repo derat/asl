@@ -85,6 +85,10 @@ new Vue({
     window.addEventListener('resize', () => this.onResize());
     this.onResize();
 
+    // This doesn't receive events while the iframe has the focus,
+    // unfortunately.
+    document.addEventListener('keydown', e => this.onKeyDown(e));
+
     if (window.location.hash.length > 1) {
       const word = window.location.hash.slice(1);
       this.defineWord(word, false /* push */);
@@ -137,6 +141,13 @@ new Vue({
     onResize: function() {
       this.contentHeight = window.innerHeight - this.$vuetify.application.top;
       this.contentWidth = window.innerWidth;
+    },
+    onKeyDown: function(ev) {
+      if (ev.key === '/') {
+        this.$refs.searchInput.focus();
+        ev.stopPropagation();
+        ev.preventDefault();
+      }
     },
     getFrameStyle: function(i) {
       const tab = this.tabs[i];
