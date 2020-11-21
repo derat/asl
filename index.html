@@ -50,7 +50,7 @@
         <v-main>
           <v-tabs-items v-model="tab" :style="{ height: `${contentHeight}px`}">
             <v-tab-item v-for="(tab, i) in tabs" :key="tab.abbrev">
-              <v-alert v-model="tab.alertShown" border="bottom" color="error" dark dense dismissible
+              <v-alert v-model="tab.alertShown" border="bottom" color="error" dark dense dismissible tile
                 >{{ tab.alertText }}</v-alert
               >
               <v-progress-circular v-if="tab.loading" indeterminate size="48" class="spinner"></v-progress-circular>
