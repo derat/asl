@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+Vue.use(VueMeta);
+
 // Tab is the model for a site displaying the signe for a word.
 class Tab {
   constructor(name, abbrev, tooltip, getUrl, minWidth) {
@@ -29,11 +31,11 @@ class Tab {
       ? Promise.resolve(this.urlCache[word])
       : this.getUrl(word)
     )
-      .then(url => {
+      .then((url) => {
         this.urlCache[word] = url;
         if (word === this.word) this.url = url;
       })
-      .catch(err => {
+      .catch((err) => {
         this.word = '';
         this.url = 'about:blank';
         this.alertText = err.toString();
@@ -53,7 +55,7 @@ new Vue({
         'Lifeprint',
         'LP',
         'Bill Vicars',
-        word =>
+        (word) =>
           Promise.resolve(
             `https://www.lifeprint.com/asl101/pages-signs/${
               word[0]
@@ -65,7 +67,7 @@ new Vue({
         'Handspeak',
         'HS',
         'Jolanta Lapiak',
-        word =>
+        (word) =>
           fetch(
             'https://cors-anywhere.herokuapp.com/https://www.handspeak.com/word/search/app/app-dictionary.php',
             {
@@ -77,11 +79,11 @@ new Vue({
               body: `page=1&query=${escape(word.split()[0])}`,
             }
           )
-            .then(resp => {
+            .then((resp) => {
               if (!resp.ok) throw new Error(resp.status);
               return resp.text();
             })
-            .then(text => {
+            .then((text) => {
               const re = new RegExp(
                 `<a href="(/word/search/index\\.php\\?id=\\d+)">${word}</a>`
               );
@@ -95,7 +97,7 @@ new Vue({
         'SignASL',
         'SA',
         '',
-        word =>
+        (word) =>
           Promise.resolve(
             `https://www.signasl.org/sign/${word.replaceAll(' ', '-')}`
           ),
@@ -106,18 +108,18 @@ new Vue({
     contentHeight: 0,
   },
   computed: {
-    cleanedInputWord: function() {
+    cleanedInputWord: function () {
       return this.inputWord ? this.inputWord.trim().toLowerCase() : '';
     },
   },
-  mounted: function() {
-    window.addEventListener('popstate', e => this.onPopState(e));
+  mounted: function () {
+    window.addEventListener('popstate', (e) => this.onPopState(e));
     window.addEventListener('resize', () => this.onResize());
     this.onResize();
 
     // This doesn't receive events while the iframe has the focus,
     // unfortunately.
-    document.addEventListener('keydown', e => this.onKeyDown(e));
+    document.addEventListener('keydown', (e) => this.onKeyDown(e));
 
     if (window.location.hash.length > 1) {
       const word = window.location.hash.slice(1);
@@ -127,21 +129,21 @@ new Vue({
   },
   methods: {
     // Updates iframes in tabs to define |word|.
-    defineWord: function(word, push) {
+    defineWord: function (word, push) {
       if (word === '') return;
       const changed = word !== this.definedWord;
       this.definedWord = word;
-      this.tabs.forEach(tab => tab.loadWord(word));
+      this.tabs.forEach((tab) => tab.loadWord(word));
       if (changed && push) window.history.pushState({ word }, '', `#${word}`);
     },
-    onSearchInputKeydown: function(e) {
+    onSearchInputKeydown: function (e) {
       if (e.keyCode === 13 && this.cleanedInputWord.length) {
         this.defineWord(this.cleanedInputWord, true /* push */);
         this.$refs.searchInput.blur();
         e.preventDefault();
       }
     },
-    onSearchButtonClick: function() {
+    onSearchButtonClick: function () {
       this.defineWord(this.cleanedInputWord, true /* push */);
       this.$refs.searchInput.blur();
     },
@@ -151,23 +153,23 @@ new Vue({
         this.defineWord(this.cleanedInputWord, true /* push */);
       }
     },
-    onPopState: function(ev) {
+    onPopState: function (ev) {
       const word = ev.state.word || '';
       this.inputWord = word;
       this.defineWord(word, false /* push */);
     },
-    onResize: function() {
+    onResize: function () {
       this.contentHeight = window.innerHeight - this.$vuetify.application.top;
       this.contentWidth = window.innerWidth;
     },
-    onKeyDown: function(ev) {
+    onKeyDown: function (ev) {
       if (ev.key === '/') {
         this.$refs.searchInput.focus();
         ev.stopPropagation();
         ev.preventDefault();
       }
     },
-    getFrameStyle: function(i) {
+    getFrameStyle: function (i) {
       const tab = this.tabs[i];
       const ratio = this.contentWidth / tab.minWidth;
       return ratio >= 1
@@ -181,6 +183,11 @@ new Vue({
             height: `${this.contentHeight / ratio}px`,
           };
     },
+  },
+  metaInfo() {
+    return {
+      title: 'ASL Lookup' + (this.definedWord ? ` - ${this.definedWord}` : ''),
+    };
   },
   el: '#app',
   vuetify: new Vuetify({
