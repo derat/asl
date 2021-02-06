@@ -69,14 +69,22 @@ new Vue({
         'Jolanta Lapiak',
         (word) =>
           fetch(
-            'https://cors-anywhere.herokuapp.com/https://www.handspeak.com/word/search/app/app-dictionary.php',
+            '/cors-proxy?url=' +
+              encodeURIComponent(
+                'https://www.handspeak.com/word/search/app/app-dictionary.php'
+              ),
             {
               method: 'POST',
-              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              headers: {
+                'Content-Type':
+                  'application/x-www-form-urlencoded; charset=UTF-8',
+              },
               // It doesn't look like multi-word searches are supported, so just
               // search for the first word and hope the full thing appears in the
               // results.
               body: `page=1&query=${escape(word.split()[0])}`,
+              credentials: 'omit',
+              mode: 'cors',
             }
           )
             .then((resp) => {
