@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <title>ASL Lookup</title>
+    <meta name="robots" content="noindex" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui"
@@ -12,9 +13,18 @@
     <link rel="shortcut icon" href="favicon.ico" />
     <link rel="apple-touch-icon" href="apple-touch-icon.png" />
     <link rel="manifest" href="manifest.webmanifest" />
-    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.3.13/dist/vuetify.min.css" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/vuetify@2.3.13/dist/vuetify.min.css"
+      rel="stylesheet"
+    />
     <link href="index.css" rel="stylesheet" />
   </head>
   <body>
@@ -35,7 +45,12 @@
             <v-btn :disabled="!cleanedInputWord.length" @click="onSearchButtonClick" icon
               ><v-icon>mdi-file-find</v-icon></v-btn
             >
-            <v-tabs v-model="tab" background-color="primary" slider-color="accent" class="tabs ml-2">
+            <v-tabs
+              v-model="tab"
+              background-color="primary"
+              slider-color="accent"
+              class="tabs ml-2"
+            >
               <v-tooltip v-for="tab in tabs" :key="tab.abbrev" bottom :disabled="!tab.tooltip">
                 <template #activator="{ on, attrs }">
                   <v-tab v-bind="attrs" v-on="on" @change="onTabChange" class="tab">
@@ -50,10 +65,22 @@
         <v-main>
           <v-tabs-items v-model="tab" :style="{ height: `${contentHeight}px`}">
             <v-tab-item v-for="(tab, i) in tabs" :key="tab.abbrev">
-              <v-alert v-model="tab.alertShown" border="bottom" color="error" dark dense dismissible tile
+              <v-alert
+                v-model="tab.alertShown"
+                border="bottom"
+                color="error"
+                dark
+                dense
+                dismissible
+                tile
                 >{{ tab.alertText }}</v-alert
               >
-              <v-progress-circular v-if="tab.loading" indeterminate size="48" class="spinner"></v-progress-circular>
+              <v-progress-circular
+                v-if="tab.loading"
+                indeterminate
+                size="48"
+                class="spinner"
+              ></v-progress-circular>
               <div v-else class="content-wrapper" :style="{ height: `${contentHeight}px`}">
                 <iframe :src="tab.url" :style="getFrameStyle(i)" class="content-iframe"></iframe>
               </div>
