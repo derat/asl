@@ -63,6 +63,12 @@
           </v-toolbar-items>
         </v-app-bar>
         <v-main>
+          <div class="current-url">
+            <v-btn @click="onCopyUrlButtonClick" icon x-small>
+              <v-icon>mdi-content-copy</v-icon>
+            </v-btn>
+            {{ tabs[tab].url }}
+          </div>
           <v-tabs-items v-model="tab" :style="{ height: `${contentHeight}px`}">
             <v-tab-item v-for="(tab, i) in tabs" :key="tab.abbrev">
               <v-alert

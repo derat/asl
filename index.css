@@ -28,6 +28,17 @@ body {
   top: 50%;
 }
 
+.current-url {
+  background-color: #ddd;
+  border-bottom: solid 1px #999;
+  font-size: 80%;
+  overflow-x: hidden;
+  padding: 8px 10px 4px 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
 .content-wrapper {
   overflow: hidden;
   width: 100%;

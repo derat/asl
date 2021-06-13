@@ -155,6 +155,15 @@ new Vue({
       this.defineWord(this.cleanedInputWord, true /* push */);
       this.$refs.searchInput.blur();
     },
+    onCopyUrlButtonClick: function () {
+      const range = document.createRange();
+      range.selectNode(document.querySelector('.current-url'));
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      document.execCommand('copy');
+      sel.removeAllRanges();
+    },
     onTabChange() {
       // Only update if a new word was typed but not submitted.
       if (this.cleanedInputWord !== this.definedWord) {
@@ -167,7 +176,10 @@ new Vue({
       this.defineWord(word, false /* push */);
     },
     onResize: function () {
-      this.contentHeight = window.innerHeight - this.$vuetify.application.top;
+      this.contentHeight =
+        window.innerHeight -
+        this.$vuetify.application.top -
+        document.querySelector('.current-url').offsetHeight;
       this.contentWidth = window.innerWidth;
     },
     onKeyDown: function (ev) {
